@@ -140,7 +140,7 @@
         "connectionStatusPendingDisconnect": "Déconnexion en attente",
         "connectionStatusDisconnecting": "Déconnexion en cours",
         "connectionStatusDisconnected": "Déconnecté",
-        "connectionStatusConnected": "Connected",
+        "connectionStatusConnected": "Connecté",
         "uptime": "Démarré depuis",
         "maxDown": "Max. Bas",
         "maxUp": "Max. Haut",
@@ -279,8 +279,8 @@
     },
     "netalertx": {
         "total": "Total",
-        "connected": "Connected",
-        "new_devices": "New Devices",
+        "connected": "Connecté",
+        "new_devices": "Nouveaux appareils",
         "down_alerts": "Down Alerts"
     },
     "pihole": {
