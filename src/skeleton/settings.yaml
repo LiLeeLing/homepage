@@ -1,7 +1,30 @@
 ---
 # For configuration options and examples, please see:
 # https://gethomepage.dev/latest/configs/settings
+title: Tong Homepage 
 
-providers:
-  openweathermap: openweathermapapikey
-  weatherapi: weatherapiapikey
+background:
+  image: https://t.mwm.moe/moez
+  blur: sm # sm, "", md, xl... see https://tailwindcss.com/docs/backdrop-blur
+  saturate: 50 # 0, 50, 100... see https://tailwindcss.com/docs/backdrop-saturate
+  brightness: 50 # 0, 50, 75... see https://tailwindcss.com/docs/backdrop-brightness
+  opacity: 50 # 0-100
+
+cardBlur: sm # sm, "", md, etc... see https://tailwindcss.com/docs/backdrop-blur
+
+favicon: https://ai.lolis.dev/favicon.ico
+
+headerStyle: boxed
+
+language: en
+
+target: _blank # Possible options include _blank, _self, and _top
+
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: false
+  showSearchSuggestions: true
+  hideVisitURL: false
+
+hideVersion: true
+
