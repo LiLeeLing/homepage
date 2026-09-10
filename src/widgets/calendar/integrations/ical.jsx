@@ -1,21 +1,42 @@
+import ICAL from "ical.js";
 import { DateTime } from "luxon";
-import { parseString } from "cal-parser";
-import { useEffect } from "react";
-import { useTranslation } from "next-i18next";
-import { RRule } from "rrule";
+import { useTranslation } from "next-i18next/pages";
+import { useEffect, useMemo } from "react";
 
-import useWidgetAPI from "../../../utils/proxy/use-widget-api";
 import Error from "../../../components/services/widget/error";
+import useWidgetAPI from "../../../utils/proxy/use-widget-api";
 
-// https://gist.github.com/jlevy/c246006675becc446360a798e2b2d781
 function simpleHash(str) {
-  /* eslint-disable no-plusplus, no-bitwise */
   let hash = 0;
+  const prime = 31;
+
   for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+    hash = (hash * prime + str.charCodeAt(i)) % 2_147_483_647;
   }
-  return (hash >>> 0).toString(36);
-  /* eslint-disable no-plusplus, no-bitwise */
+
+  return Math.abs(hash).toString(36);
+}
+
+function buildEvent(event, type) {
+  return {
+    id: event.getFirstPropertyValue("uid"),
+    type,
+    title: event.getFirstPropertyValue("summary"),
+    rrule: event.getFirstPropertyValue("rrule"),
+    dtstart:
+      event.getFirstPropertyValue("dtstart") ||
+      event.getFirstPropertyValue("due") ||
+      event.getFirstPropertyValue("completed") ||
+      ICAL.Time.now(), // handles events without a date
+    dtend:
+      event.getFirstPropertyValue("dtend") ||
+      event.getFirstPropertyValue("due") ||
+      event.getFirstPropertyValue("completed") ||
+      ICAL.Time.now(), // handles events without a date
+    location: event.getFirstPropertyValue("location"),
+    status: event.getFirstPropertyValue("status"),
+    url: event.getFirstPropertyValue("url"),
+  };
 }
 
 export default function Integration({ config, params, setEvents, hideErrors, timezone }) {
@@ -24,74 +45,119 @@ export default function Integration({ config, params, setEvents, hideErrors, tim
     refreshInterval: 300000, // 5 minutes
   });
 
-  useEffect(() => {
-    let parsedIcal;
-
-    if (!icalError && icalData && !icalData.error) {
-      parsedIcal = parseString(icalData.data);
-      if (parsedIcal.events.length === 0) {
-        icalData.error = { message: `'${config.name}': ${t("calendar.noEventsFound")}` };
-      }
+  const { events, dataError } = useMemo(() => {
+    if (icalError || !icalData || icalData.error) {
+      return { events: [], dataError: undefined };
     }
+
+    if (!icalData.data) {
+      return {
+        events: [],
+        dataError: { message: `'${config.name}': ${t("calendar.errorWhenLoadingData")}` },
+      };
+    }
+
+    const jCal = ICAL.parse(icalData.data);
+    const vCalendar = new ICAL.Component(jCal);
+    const parsedEvents = [
+      ...vCalendar.getAllSubcomponents("vevent").map((event) => buildEvent(event, "vevent")),
+      ...vCalendar.getAllSubcomponents("vtodo").map((todo) => buildEvent(todo, "vtodo")),
+    ];
+
+    return {
+      events: parsedEvents,
+      dataError:
+        parsedEvents.length === 0 ? { message: `'${config.name}': ${t("calendar.noEventsFound")}` } : undefined,
+    };
+  }, [icalData, icalError, config.name, t]);
+
+  useEffect(() => {
+    const { showName = false } = config?.params || {};
 
     const startDate = DateTime.fromISO(params.start);
     const endDate = DateTime.fromISO(params.end);
 
-    if (icalError || !parsedIcal || !startDate.isValid || !endDate.isValid) {
+    if (events.length === 0 || !startDate.isValid || !endDate.isValid) {
       return;
     }
 
+    const rangeStart = ICAL.Time.fromJSDate(startDate.toJSDate());
+    const rangeEnd = ICAL.Time.fromJSDate(endDate.toJSDate());
+
+    const getOcurrencesFromRange = (event) => {
+      if (!event.rrule) {
+        if (event.dtstart.compare(rangeStart) >= 0 && event.dtend.compare(rangeEnd) <= 0) {
+          if (event.type === "vevent" && event.dtstart.isDate && event.dtend.isDate) {
+            const occurrences = [];
+            for (const date = event.dtstart.clone(); date.compare(event.dtend) < 0; date.day += 1) {
+              occurrences.push(date.clone());
+            }
+            return occurrences;
+          }
+
+          return [event.dtstart];
+        }
+
+        return [];
+      }
+
+      const iterator = event.rrule.iterator(event.dtstart);
+
+      const occurrences = [];
+      for (let next = iterator.next(); next && next.compare(rangeEnd) < 0; next = iterator.next()) {
+        if (next.compare(rangeStart) < 0) {
+          continue;
+        }
+
+        occurrences.push(next.clone());
+      }
+
+      return occurrences;
+    };
+
     const eventsToAdd = {};
-    const events = parsedIcal?.getEventsBetweenDates(startDate.toJSDate(), endDate.toJSDate());
-    const now = timezone ? DateTime.now().setZone(timezone) : DateTime.now();
+    events.forEach((event) => {
+      const occurrences = getOcurrencesFromRange(event);
 
-    events?.forEach((event) => {
-      let title = `${event?.summary?.value}`;
-      if (config?.params?.showName) {
-        title = `${config.name}: ${title}`;
-      }
+      occurrences.forEach((icalDate) => {
+        const date = icalDate.toJSDate();
 
-      const eventToAdd = (date, i, type) => {
-        // 'dtend' is null for all-day events
-        const { dtstart, dtend = { value: 0 } } = event;
-        const days = dtend.value === 0 ? 1 : (dtend.value - dtstart.value) / (1000 * 60 * 60 * 24);
-        const eventDate = timezone ? DateTime.fromJSDate(date, { zone: timezone }) : DateTime.fromJSDate(date);
+        const occurrenceTimestamp = date.getTime();
+        const eventIdentifier =
+          event.id ??
+          simpleHash(
+            `${event.title ?? ""}-${event.type ?? ""}-${event.status ?? ""}-${event.url ?? ""}-${event.location ?? ""}`,
+          );
+        const hash = simpleHash(`${eventIdentifier}-${occurrenceTimestamp}`);
 
-        for (let j = 0; j < days; j += 1) {
-          // See https://github.com/gethomepage/homepage/issues/2753 uid is not stable
-          // assumption is that the event is the same if the start, end and title are all the same
-          const hash = simpleHash(`${dtstart?.value}${dtend?.value}${title}${i}${j}${type}}`);
-          eventsToAdd[hash] = {
-            title,
-            date: eventDate.plus({ days: j }),
-            color: config?.color ?? "zinc",
-            isCompleted: eventDate < now,
-            additional: event.location?.value,
-            type: "ical",
-          };
+        let title = event.title;
+        if (showName) {
+          title = `${config.name}: ${title}`;
         }
-      };
 
-      const recurrenceOptions = event?.recurrenceRule?.origOptions;
-      if (recurrenceOptions && Object.keys(recurrenceOptions).length !== 0) {
-        try {
-          const rule = new RRule(recurrenceOptions);
-          const recurringEvents = rule.between(startDate.toJSDate(), endDate.toJSDate());
+        const getIsCompleted = () => {
+          if (event.type === "vtodo") {
+            return event.status === "COMPLETED";
+          }
 
-          recurringEvents.forEach((date, i) => eventToAdd(date, i, "recurring"));
-          return;
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.error("Unable to parse recurring events from iCal: %s", e);
-        }
-      }
+          return DateTime.fromJSDate(date) < DateTime.now();
+        };
 
-      event.matchingDates.forEach((date, i) => eventToAdd(date, i, "single"));
+        eventsToAdd[hash] = {
+          title,
+          date: DateTime.fromJSDate(date),
+          color: config?.color ?? "zinc",
+          isCompleted: getIsCompleted(),
+          additional: event.location,
+          type: "ical",
+          url: event.url,
+        };
+      });
     });
 
     setEvents((prevEvents) => ({ ...prevEvents, ...eventsToAdd }));
-  }, [icalData, icalError, config, params, setEvents, timezone, t]);
+  }, [events, config, params, setEvents, timezone]);
 
-  const error = icalError ?? icalData?.error;
+  const error = icalError ?? icalData?.error ?? dataError;
   return error && !hideErrors && <Error error={{ message: `${config.type}: ${error.message ?? error}` }} />;
 }

@@ -1,8 +1,8 @@
+import { useTranslation } from "next-i18next/pages";
 import useSWR from "swr";
-import { useTranslation } from "next-i18next";
 
-import Error from "../widget/error";
 import Container from "../widget/container";
+import Error from "../widget/error";
 import Raw from "../widget/raw";
 
 import Node from "./node";

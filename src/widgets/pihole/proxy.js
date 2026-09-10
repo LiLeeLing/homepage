@@ -1,9 +1,9 @@
 import cache from "memory-cache";
 
-import { httpProxy } from "utils/proxy/http";
-import { formatApiCall } from "utils/proxy/api-helpers";
 import getServiceWidget from "utils/config/service-helpers";
 import createLogger from "utils/logger";
+import { formatApiCall } from "utils/proxy/api-helpers";
+import { httpProxy } from "utils/proxy/http";
 import widgets from "widgets/widgets";
 
 const proxyName = "piholeProxyHandler";
@@ -28,12 +28,16 @@ async function login(widget, service) {
     logger.error("Failed to login to Pi-Hole API, status: %d", status);
     cache.del(`${sessionSIDCacheKey}.${service}`);
   } else {
-    cache.put(`${sessionSIDCacheKey}.${service}`, dataParsed.session.sid, dataParsed.session.validity);
+    cache.put(
+      `${sessionSIDCacheKey}.${service}`,
+      dataParsed.session.sid,
+      Math.min(2147483647, dataParsed.session.validity * 1000), // https://github.com/ptarjan/node-cache/issues/84
+    );
   }
 }
 
 export default async function piholeProxyHandler(req, res) {
-  const { group, service } = req.query;
+  const { group, service, index } = req.query;
   let endpoint = "stats/summary";
 
   if (!group || !service) {
@@ -41,7 +45,7 @@ export default async function piholeProxyHandler(req, res) {
     return res.status(400).json({ error: "Invalid proxy service type" });
   }
 
-  const widget = await getServiceWidget(group, service);
+  const widget = await getServiceWidget(group, service, index);
   if (!widget) {
     logger.error("Invalid or missing widget for service '%s' in group '%s'", service, group);
     return res.status(400).json({ error: "Invalid widget configuration" });

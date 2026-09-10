@@ -20,7 +20,13 @@ helm install my-release jameswynn/homepage
 Set the `mode` in the `kubernetes.yaml` to `cluster`.
 
 ```yaml
-mode: default
+mode: cluster
+```
+
+To enable Kubernetes gateway-api compatibility, set `gateway` to `true`.
+
+```yaml
+gateway: true
 ```
 
 ## Widgets

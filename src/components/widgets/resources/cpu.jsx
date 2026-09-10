@@ -1,9 +1,9 @@
-import useSWR from "swr";
+import { useTranslation } from "next-i18next/pages";
 import { FiCpu } from "react-icons/fi";
-import { useTranslation } from "next-i18next";
+import useSWR from "swr";
 
-import Resource from "../widget/resource";
 import Error from "../widget/error";
+import Resource from "../widget/resource";
 
 export default function Cpu({ expanded, refresh = 1500 }) {
   const { t } = useTranslation();

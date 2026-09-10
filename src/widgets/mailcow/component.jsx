@@ -1,7 +1,7 @@
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
-import Container from "components/services/widget/container";
 import Block from "components/services/widget/block";
+import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 
 export default function Component({ service }) {
@@ -25,9 +25,9 @@ export default function Component({ service }) {
   }
 
   const domains = resultData.length;
-  const mailboxes = resultData.reduce((acc, val) => acc + val.mboxes_in_domain, 0);
-  const mails = resultData.reduce((acc, val) => acc + val.msgs_total, 0);
-  const storage = resultData.reduce((acc, val) => acc + val.bytes_total, 0);
+  const mailboxes = resultData.reduce((acc, val) => acc + parseInt(val.mboxes_in_domain, 10), 0);
+  const mails = resultData.reduce((acc, val) => acc + parseInt(val.msgs_total, 10), 0);
+  const storage = resultData.reduce((acc, val) => acc + parseInt(val.bytes_total, 10), 0);
 
   return (
     <Container service={service}>

@@ -1,13 +1,9 @@
-import { createContext, useState, useMemo } from "react";
+import { createContext, useMemo, useState } from "react";
 
 export const SettingsContext = createContext();
 
 export function SettingsProvider({ initialSettings, children }) {
-  const [settings, setSettings] = useState({});
-
-  if (initialSettings) {
-    setSettings(initialSettings);
-  }
+  const [settings, setSettings] = useState(() => initialSettings ?? {});
 
   const value = useMemo(() => ({ settings, setSettings }), [settings]);
 

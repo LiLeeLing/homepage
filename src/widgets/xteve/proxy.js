@@ -1,19 +1,19 @@
+import getServiceWidget from "utils/config/service-helpers";
+import createLogger from "utils/logger";
 import { formatApiCall } from "utils/proxy/api-helpers";
 import { httpProxy } from "utils/proxy/http";
-import createLogger from "utils/logger";
 import widgets from "widgets/widgets";
-import getServiceWidget from "utils/config/service-helpers";
 
 const logger = createLogger("xteveProxyHandler");
 
 export default async function xteveProxyHandler(req, res) {
-  const { group, service } = req.query;
+  const { group, service, index } = req.query;
 
   if (!group || !service) {
     return res.status(400).json({ error: "Invalid proxy service type" });
   }
 
-  const widget = await getServiceWidget(group, service);
+  const widget = await getServiceWidget(group, service, index);
   const api = widgets?.[widget.type]?.api;
   if (!api) {
     return res.status(403).json({ error: "Service does not support API calls" });
@@ -24,7 +24,6 @@ export default async function xteveProxyHandler(req, res) {
   const payload = { cmd: "status" };
 
   if (widget.username && widget.password) {
-    // eslint-disable-next-line no-unused-vars
     const [status, contentType, data] = await httpProxy(url, {
       method,
       body: JSON.stringify({

@@ -1,6 +1,6 @@
-import { DateTime } from "luxon";
 import classNames from "classnames";
-import { useTranslation } from "next-i18next";
+import { DateTime } from "luxon";
+import { useTranslation } from "next-i18next/pages";
 
 import Event, { compareDateTimezone } from "./event";
 

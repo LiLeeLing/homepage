@@ -6,10 +6,10 @@ import createLogger from "utils/logger";
 const logger = createLogger("ping");
 
 export default async function handler(req, res) {
-  const { group, service } = req.query;
-  const serviceItem = await getServiceItem(group, service);
+  const { groupName, serviceName } = req.query;
+  const serviceItem = await getServiceItem(groupName, serviceName);
   if (!serviceItem) {
-    logger.debug(`No service item found for group ${group} named ${service}`);
+    logger.debug(`No service item found for group ${groupName} named ${serviceName}`);
     return res.status(400).send({
       error: "Unable to find service, see log for details.",
     });
@@ -28,9 +28,7 @@ export default async function handler(req, res) {
   try {
     // maintain backwards compatibility with old ping where may be http://...
     hostname = new URL(pingHostOrURL).hostname;
-  } catch (e) {
-    // eslint-disable-line no-empty
-  }
+  } catch (e) {}
 
   try {
     const response = await ping.probe(hostname);

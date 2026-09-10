@@ -1,6 +1,6 @@
-import { httpProxy } from "../../../utils/proxy/http";
-import createLogger from "../../../utils/logger";
 import { getSettings } from "../../../utils/config/config";
+import createLogger from "../../../utils/logger";
+import { httpProxy } from "../../../utils/proxy/http";
 
 const logger = createLogger("longhorn");
 
@@ -33,12 +33,15 @@ function parseLonghornData(data) {
       scheduled,
     };
   });
-  const total = nodes.reduce((summary, node) => ({
-    available: summary.available + node.available,
-    maximum: summary.maximum + node.maximum,
-    reserved: summary.reserved + node.reserved,
-    scheduled: summary.scheduled + node.scheduled,
-  }));
+  const total = nodes.reduce(
+    (summary, node) => ({
+      available: summary.available + node.available,
+      maximum: summary.maximum + node.maximum,
+      reserved: summary.reserved + node.reserved,
+      scheduled: summary.scheduled + node.scheduled,
+    }),
+    { available: 0, maximum: 0, reserved: 0, scheduled: 0 },
+  );
   total.id = "total";
   nodes.push(total);
   return nodes;

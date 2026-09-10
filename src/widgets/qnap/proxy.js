@@ -3,10 +3,10 @@
 import cache from "memory-cache";
 import { xml2json } from "xml-js";
 
-import { httpProxy } from "utils/proxy/http";
-import { formatApiCall } from "utils/proxy/api-helpers";
 import getServiceWidget from "utils/config/service-helpers";
 import createLogger from "utils/logger";
+import { formatApiCall } from "utils/proxy/api-helpers";
+import { httpProxy } from "utils/proxy/http";
 
 const proxyName = "qnapProxyHandler";
 const sessionTokenCacheKey = `${proxyName}__sessionToken`;
@@ -47,7 +47,7 @@ async function apiCall(widget, endpoint, service) {
 
   if (status === 404) {
     logger.error("QNAP API rejected the request, attempting to obtain new session token");
-    key = await login(widget, service);
+    ({ token: key } = await login(widget, service));
     apiUrl = new URL(formatApiCall(`${endpoint}&sid=${key}`, widget));
     [status, contentType, data, responseHeaders] = await httpProxy(apiUrl);
   }
@@ -61,7 +61,7 @@ async function apiCall(widget, endpoint, service) {
 
   if (dataDecoded.QDocRoot.authPassed._cdata === "0") {
     logger.error("QNAP API rejected the request, attempting to obtain new session token");
-    key = await login(widget, service);
+    ({ token: key } = await login(widget, service));
     apiUrl = new URL(formatApiCall(`${endpoint}&sid=${key}`, widget));
     [status, contentType, data, responseHeaders] = await httpProxy(apiUrl);
 
@@ -77,14 +77,14 @@ async function apiCall(widget, endpoint, service) {
 }
 
 export default async function qnapProxyHandler(req, res) {
-  const { group, service } = req.query;
+  const { group, service, index } = req.query;
 
   if (!group || !service) {
     logger.debug("Invalid or missing service '%s' or group '%s'", service, group);
     return res.status(400).json({ error: "Invalid proxy service type" });
   }
 
-  const widget = await getServiceWidget(group, service);
+  const widget = await getServiceWidget(group, service, index);
   if (!widget) {
     logger.debug("Invalid or missing widget for service '%s' in group '%s'", service, group);
     return res.status(400).json({ error: "Invalid proxy service type" });

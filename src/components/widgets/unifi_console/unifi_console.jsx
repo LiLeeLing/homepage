@@ -1,25 +1,24 @@
-import { BiError, BiWifi, BiCheckCircle, BiXCircle, BiNetworkChart } from "react-icons/bi";
+import { useTranslation } from "next-i18next/pages";
+import { BiCheckCircle, BiError, BiNetworkChart, BiWifi, BiXCircle } from "react-icons/bi";
 import { MdSettingsEthernet } from "react-icons/md";
-import { useTranslation } from "next-i18next";
 import { SiUbiquiti } from "react-icons/si";
 
-import Error from "../widget/error";
 import Container from "../widget/container";
+import Error from "../widget/error";
+import PrimaryText from "../widget/primary_text";
 import Raw from "../widget/raw";
 import WidgetIcon from "../widget/widget_icon";
-import PrimaryText from "../widget/primary_text";
 
 import useWidgetAPI from "utils/proxy/use-widget-api";
 
 export default function Widget({ options }) {
   const { t } = useTranslation();
 
-  // eslint-disable-next-line no-param-reassign, no-multi-assign
-  options.service_group = options.service_name = "unifi_console";
-  const { data: statsData, error: statsError } = useWidgetAPI(options, "stat/sites", { index: options.index });
+  const widgetOptions = { ...options, service_group: "unifi_console", service_name: "unifi_console" };
+  const { data: statsData, error: statsError } = useWidgetAPI(widgetOptions, "stat/sites", { index: options.index });
 
   if (statsError) {
-    return <Error options={options} />;
+    return <Error options={widgetOptions} />;
   }
 
   const defaultSite = options.site
@@ -28,27 +27,27 @@ export default function Widget({ options }) {
 
   if (!defaultSite) {
     return (
-      <Container options={options} additionalClassNames="information-widget-unifi-console">
+      <Container options={widgetOptions} additionalClassNames="information-widget-unifi-console">
         <PrimaryText>{t("unifi.wait")}</PrimaryText>
         <WidgetIcon icon={SiUbiquiti} />
       </Container>
     );
   }
 
-  const wan = defaultSite.health.find((h) => h.subsystem === "wan");
-  const lan = defaultSite.health.find((h) => h.subsystem === "lan");
-  const wlan = defaultSite.health.find((h) => h.subsystem === "wlan");
-  [wan, lan, wlan].forEach((s) => {
-    s.up = s.status === "ok"; // eslint-disable-line no-param-reassign
-    s.show = s.status !== "unknown"; // eslint-disable-line no-param-reassign
-  });
+  const getHealth = (subsystem) => {
+    const health = defaultSite.health.find((item) => item.subsystem === subsystem) ?? { status: "unknown" };
+    return { ...health, up: health.status === "ok", show: health.status !== "unknown" };
+  };
+  const wan = getHealth("wan");
+  const lan = getHealth("lan");
+  const wlan = getHealth("wlan");
   const name = wan.gw_name ?? defaultSite.desc;
   const uptime = wan["gw_system-stats"] ? wan["gw_system-stats"].uptime : null;
 
   const dataEmpty = !(wan.show || lan.show || wlan.show || uptime);
 
   return (
-    <Container options={options} additionalClassNames="information-widget-unifi-console">
+    <Container options={widgetOptions} additionalClassNames="information-widget-unifi-console">
       <Raw>
         <div className="flex-none flex flex-row items-center mr-3 py-1.5">
           <div className="flex flex-col">

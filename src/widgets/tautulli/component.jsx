@@ -1,6 +1,5 @@
-/* eslint-disable camelcase */
-import { useTranslation } from "next-i18next";
-import { BsFillPlayFill, BsPauseFill, BsCpu, BsFillCpuFill } from "react-icons/bs";
+import { useTranslation } from "next-i18next/pages";
+import { BsCpu, BsFillCpuFill, BsFillPlayFill, BsPauseFill } from "react-icons/bs";
 import { MdOutlineSmartDisplay, MdSmartDisplay } from "react-icons/md";
 
 import Container from "components/services/widget/container";
@@ -167,7 +166,7 @@ export default function Component({ service }) {
     );
   }
 
-  const playing = activityData.response.data.sessions.sort((a, b) => {
+  const playing = [...activityData.response.data.sessions].sort((a, b) => {
     if (a.view_offset > b.view_offset) {
       return 1;
     }
@@ -205,7 +204,7 @@ export default function Component({ service }) {
     <div className="flex flex-col pb-1 mx-1">
       {playing.map((session) => (
         <SessionEntry
-          key={session.Id}
+          key={session.session_key}
           session={session}
           enableUser={enableUser}
           showEpisodeNumber={showEpisodeNumber}

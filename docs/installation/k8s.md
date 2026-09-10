@@ -3,85 +3,6 @@ title: Kubernetes Installation
 description: Install on Kubernetes
 ---
 
-## Install with Helm
-
-There is an [unofficial helm chart](https://github.com/jameswynn/helm-charts/tree/main/charts/homepage) that creates all the necessary manifests, including the service account and RBAC entities necessary for service discovery.
-
-```sh
-helm repo add jameswynn https://jameswynn.github.io/helm-charts
-helm install homepage jameswynn/homepage -f values.yaml
-```
-
-The helm chart allows for all the configurations to be inlined directly in your `values.yaml`:
-
-```yaml
-config:
-  bookmarks:
-    - Developer:
-        - Github:
-            - abbr: GH
-              href: https://github.com/
-  services:
-    - My First Group:
-        - My First Service:
-            href: http://localhost/
-            description: Homepage is awesome
-
-    - My Second Group:
-        - My Second Service:
-            href: http://localhost/
-            description: Homepage is the best
-
-    - My Third Group:
-        - My Third Service:
-            href: http://localhost/
-            description: Homepage is 😎
-  widgets:
-    # show the kubernetes widget, with the cluster summary and individual nodes
-    - kubernetes:
-        cluster:
-          show: true
-          cpu: true
-          memory: true
-          showLabel: true
-          label: "cluster"
-        nodes:
-          show: true
-          cpu: true
-          memory: true
-          showLabel: true
-    - search:
-        provider: duckduckgo
-        target: _blank
-  kubernetes:
-    mode: cluster
-  settings:
-
-# The service account is necessary to allow discovery of other services
-serviceAccount:
-  create: true
-  name: homepage
-
-# This enables the service account to access the necessary resources
-enableRbac: true
-
-ingress:
-  main:
-    enabled: true
-    annotations:
-      # Example annotations to add Homepage to your Homepage!
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/name: "Homepage"
-      gethomepage.dev/description: "Dynamically Detected Homepage"
-      gethomepage.dev/group: "Dynamic"
-      gethomepage.dev/icon: "homepage.png"
-    hosts:
-      - host: homepage.example.com
-        paths:
-          - path: /
-            pathType: Prefix
-```
-
 ## Install with Kubernetes Manifests
 
 If you don't want to use the unofficial Helm chart, you can also create your own Kubernetes manifest(s) and apply them with `kubectl apply -f filename.yaml`.
@@ -175,6 +96,7 @@ data:
         expanded: true
         cpu: true
         memory: true
+        network: default
     - search:
         provider: duckduckgo
         target: _blank
@@ -209,9 +131,17 @@ rules:
       - get
       - list
   - apiGroups:
-      - traefik.containo.us
+      - traefik.io
     resources:
       - ingressroutes
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - gateway.networking.k8s.io
+    resources:
+      - httproutes
+      - gateways
     verbs:
       - get
       - list
@@ -293,10 +223,33 @@ spec:
         - name: homepage
           image: "ghcr.io/gethomepage/homepage:latest"
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: HOMEPAGE_ALLOWED_HOSTS
+              value: "$(MY_POD_IP):3000,gethomepage.dev" # See gethomepage.dev/installation/#homepage_allowed_hosts . Value before the comma is required for the k8s probe
           ports:
             - name: http
               containerPort: 3000
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/healthcheck
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
           volumeMounts:
             - mountPath: /app/config/custom.js
               name: homepage-config
@@ -370,7 +323,7 @@ prevent unnecessary re-renders on page loads and window / tab focusing. The
 procedure for enabling sticky sessions depends on your Ingress controller. Below
 is an example using Traefik as the Ingress controller.
 
-```
+```yaml
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:

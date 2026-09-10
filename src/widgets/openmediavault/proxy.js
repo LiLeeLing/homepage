@@ -1,8 +1,8 @@
-import { formatApiCall } from "utils/proxy/api-helpers";
-import { httpProxy } from "utils/proxy/http";
 import getServiceWidget from "utils/config/service-helpers";
-import { addCookieToJar, setCookieHeader } from "utils/proxy/cookie-jar";
 import createLogger from "utils/logger";
+import { formatApiCall } from "utils/proxy/api-helpers";
+import { addCookieToJar, setCookieHeader } from "utils/proxy/cookie-jar";
+import { httpProxy } from "utils/proxy/http";
 import widgets from "widgets/widgets";
 
 const PROXY_NAME = "OMVProxyHandler";
@@ -12,14 +12,14 @@ const BG_POLL_PERIOD = 500;
 const logger = createLogger(PROXY_NAME);
 
 async function getWidget(req) {
-  const { group, service } = req.query;
+  const { group, service, index } = req.query;
 
   if (!group || !service) {
     logger.debug("Invalid or missing service '%s' or group '%s'", service, group);
     return null;
   }
 
-  const widget = await getServiceWidget(group, service);
+  const widget = await getServiceWidget(group, service, index);
 
   if (!widget) {
     logger.debug("Invalid or missing widget for service '%s' in group '%s'", service, group);
@@ -73,7 +73,7 @@ async function tryLogin(widget) {
   }
 
   const json = JSON.parse(resp.data.toString());
-  if (json.response.authenticated !== true) {
+  if (json.response.authenticated !== true && json.response.status !== "authenticated") {
     logger.error("Login error in OpenMediaVault. Data: %s", resp.data);
     resp.status = 401;
     return [false, resp];
@@ -125,7 +125,7 @@ export default async function proxyHandler(req, res) {
     if (success) {
       addCookieToJar(url, lResp.headers);
     } else {
-      res.status(lResp.status).json({ error: { message: `HTTP Error ${lResp.status}`, url, data: lResp.data } });
+      return res.status(lResp.status).json({ error: { message: `HTTP Error ${lResp.status}`, url, data: lResp.data } });
     }
 
     logger.debug("Retrying OpenMediaVault request after login.");

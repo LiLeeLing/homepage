@@ -50,7 +50,7 @@ You can also pass API keys from the widget configuration to the proxy handler, f
 
 ### `credentialedProxyHandler`
 
-A proxy handler that makes authenticated by setting request headers. Credentials are pulled from the widgets configuration.
+A proxy handler that makes authenticated requests by setting request headers. Credentials are pulled from the widgets configuration.
 
 By default the key is passed as an `X-API-Key` header. If you need to pass the key as something else, either add a case to the credentialedProxyHandler or create a new proxy handler.
 
@@ -201,3 +201,18 @@ export default async function customProxyHandler(req, res, map) {
 ```
 
 Proxy handlers are a complex topic and require a good understanding of JavaScript and the Homepage codebase. If you are new to Homepage, we recommend using the built-in proxy handlers.
+
+## Testing proxy handlers
+
+Proxy handlers are a common source of regressions because they deal with authentication, request formatting, and sometimes odd upstream API behavior.
+
+When you add a new proxy handler or custom widget proxy, include tests that focus on behavior:
+
+- **Request construction:** the correct URL/path, query params, headers, and auth (and that secrets are not accidentally logged).
+- **Response mapping:** the payload shape expected by the widget/component (including optional/missing fields).
+- **Error handling:** upstream non-200s, invalid JSON, timeouts, and unexpected payloads should produce a predictable result.
+
+Test locations:
+
+- Shared handlers live in `src/utils/proxy/handlers/*.js` with tests alongside them (for example `src/utils/proxy/handlers/generic.test.js`).
+- Widget-specific proxies live in `src/widgets/<widget>/proxy.js` with tests in `src/widgets/<widget>/proxy.test.js`.

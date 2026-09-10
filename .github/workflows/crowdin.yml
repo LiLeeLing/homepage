@@ -8,7 +8,11 @@ on:
     paths: [
       '/public/locales/en/**',
     ]
-    branches: [ main ]
+    branches: [ dev ]
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   synchronize-with-crowdin:
@@ -17,14 +21,15 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: crowdin action
-      uses: crowdin/github-action@v2
+      uses: crowdin/github-action@e4a6c1338b4063c77d46a81875265f9e8bd76f95 # v3.0.0
       with:
         upload_translations: false
         download_translations: true
-        crowdin_branch_name: main
-        localization_branch_name: l10n_main
+        crowdin_branch_name: dev
+        localization_branch_name: l10n_dev
+        pull_request_labels: translation
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}

@@ -1,7 +1,7 @@
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
-import Container from "components/services/widget/container";
 import Block from "components/services/widget/block";
+import Container from "components/services/widget/container";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 
 export default function Component({ service }) {
@@ -27,7 +27,6 @@ export default function Component({ service }) {
   }
 
   // uptime info
-  // eslint-disable-next-line no-unused-vars
   const [hour, minutes, seconds] = infoData.data.up_time.split(":");
   const days = Math.floor(hour / 24);
   const uptime = `${t("common.number", { value: days })} ${t("diskstation.days")}`;
@@ -43,8 +42,9 @@ export default function Component({ service }) {
   // utilization info
   const { cpu, memory } = utilizationData.data;
   const cpuLoad = parseFloat(cpu.user_load) + parseFloat(cpu.system_load);
-  const memoryUsage =
-    100 - (100 * (parseFloat(memory.avail_real) + parseFloat(memory.cached))) / parseFloat(memory.total_real);
+  const memoryUsage = memory.real_usage
+    ? parseFloat(memory.real_usage)
+    : 100 - (100 * (parseFloat(memory.avail_real) + parseFloat(memory.cached))) / parseFloat(memory.total_real);
 
   return (
     <Container service={service}>

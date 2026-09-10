@@ -1,6 +1,5 @@
 // prettyBytes taken from https://github.com/sindresorhus/pretty-bytes
 
-/* eslint-disable no-param-reassign */
 const BYTE_UNITS = ["B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
 const BIBYTE_UNITS = ["B", "kiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
@@ -37,7 +36,6 @@ function prettyBytes(number, options) {
     ...options,
   };
 
-  // eslint-disable-next-line no-nested-ternary
   const UNITS = options.bits ? (options.binary ? BIBIT_UNITS : BIT_UNITS) : options.binary ? BIBYTE_UNITS : BYTE_UNITS;
 
   if (options.signed && number === 0) {
@@ -45,7 +43,7 @@ function prettyBytes(number, options) {
   }
 
   const isNegative = number < 0;
-  // eslint-disable-next-line no-nested-ternary
+
   const prefix = isNegative ? "-" : options.signed ? "+" : "";
 
   if (isNegative) {
@@ -84,12 +82,12 @@ function prettyBytes(number, options) {
   return `${prefix + numberString} ${unit}`;
 }
 
-function uptime(uptimeInSeconds, i18next) {
-  const mo = Math.floor(uptimeInSeconds / (3600 * 24 * 31));
-  const d = Math.floor((uptimeInSeconds % (3600 * 24 * 31)) / (3600 * 24));
-  const h = Math.floor((uptimeInSeconds % (3600 * 24)) / 3600);
-  const m = Math.floor((uptimeInSeconds % 3600) / 60);
-  const s = Math.floor(uptimeInSeconds % 60);
+function duration(durationInSeconds, i18next) {
+  const mo = Math.floor(durationInSeconds / (3600 * 24 * 31));
+  const d = Math.floor((durationInSeconds % (3600 * 24 * 31)) / (3600 * 24));
+  const h = Math.floor((durationInSeconds % (3600 * 24)) / 3600);
+  const m = Math.floor((durationInSeconds % 3600) / 60);
+  const s = Math.floor(durationInSeconds % 60);
 
   const moDisplay = mo > 0 ? mo + i18next.t("common.months") : "";
   const dDisplay = d > 0 ? d + i18next.t("common.days") : "";
@@ -131,14 +129,14 @@ module.exports = {
               ? BIBIT_UNITS
               : BIT_UNITS
             : options.binary
-            ? BIBYTE_UNITS
-            : BYTE_UNITS;
+              ? BIBYTE_UNITS
+              : BYTE_UNITS;
 
           if (value === 0) return `0 ${sizes[0]}/s`;
 
           const dm = options.decimals ? options.decimals : 0;
 
-          const i = options.binary ? 2 : Math.floor(Math.log(value) / Math.log(k));
+          const i = Math.floor(Math.log(value) / Math.log(k));
 
           const formatted = new Intl.NumberFormat(lng, { maximumFractionDigits: dm, minimumFractionDigits: dm }).format(
             parseFloat(value / k ** i),
@@ -156,7 +154,7 @@ module.exports = {
         i18next.services.formatter.add("relativeDate", (value, lng, options) =>
           relativeDate(new Date(value), new Intl.RelativeTimeFormat(lng, { ...options })),
         );
-        i18next.services.formatter.add("uptime", (value, lng) => uptime(value, i18next));
+        i18next.services.formatter.add("duration", (value, lng) => duration(value, i18next));
       },
       type: "3rdParty",
     },

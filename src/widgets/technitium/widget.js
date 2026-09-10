@@ -1,5 +1,5 @@
-import genericProxyHandler from "utils/proxy/handlers/generic";
 import { asJson } from "utils/proxy/api-helpers";
+import genericProxyHandler from "utils/proxy/handlers/generic";
 
 const widget = {
   api: "{url}/api/{endpoint}?token={key}&utc=true",
@@ -8,7 +8,7 @@ const widget = {
     stats: {
       endpoint: "dashboard/stats/get",
       validate: ["response", "status"],
-      params: ["type"],
+      params: ["node", "type"],
       map: (data) => asJson(data).response?.stats,
     },
   },

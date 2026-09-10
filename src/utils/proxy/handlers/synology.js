@@ -1,9 +1,9 @@
 import cache from "memory-cache";
 
 import getServiceWidget from "utils/config/service-helpers";
-import { asJson, formatApiCall } from "utils/proxy/api-helpers";
-import { httpProxy } from "utils/proxy/http";
 import createLogger from "utils/logger";
+import { asJson, formatApiCall, parseVersionForUrl } from "utils/proxy/api-helpers";
+import { httpProxy } from "utils/proxy/http";
 import widgets from "widgets/widgets";
 
 const INFO_ENDPOINT = "{url}/webapi/query.cgi?api=SYNO.API.Info&version=1&method=query";
@@ -48,7 +48,7 @@ async function getApiInfo(serviceWidget, apiName, serviceName) {
   }
 
   const infoUrl = formatApiCall(INFO_ENDPOINT, serviceWidget);
-  // eslint-disable-next-line no-unused-vars
+
   const [status, contentType, data] = await httpProxy(infoUrl);
 
   if (status === 200) {
@@ -56,7 +56,7 @@ async function getApiInfo(serviceWidget, apiName, serviceName) {
       const json = asJson(data);
       if (json?.data?.[apiName]) {
         cgiPath = json.data[apiName].path;
-        maxVersion = json.data[apiName].maxVersion;
+        maxVersion = parseVersionForUrl(json.data[apiName].maxVersion);
         logger.debug(
           `Detected ${serviceWidget.type}: apiName '${apiName}', cgiPath '${cgiPath}', and maxVersion ${maxVersion}`,
         );
@@ -74,7 +74,6 @@ async function getApiInfo(serviceWidget, apiName, serviceName) {
 async function handleUnsuccessfulResponse(serviceWidget, url, serviceName) {
   logger.debug(`Attempting login to ${serviceWidget.type}`);
 
-  // eslint-disable-next-line no-unused-vars
   const [apiPath, maxVersion] = await getApiInfo(serviceWidget, AUTH_API_NAME, serviceName);
 
   const authArgs = { path: apiPath ?? "entry.cgi", maxVersion: maxVersion ?? 7, ...serviceWidget };
@@ -131,13 +130,16 @@ function toError(url, synologyError) {
 }
 
 export default async function synologyProxyHandler(req, res) {
-  const { group, service, endpoint } = req.query;
+  const { group, service, endpoint, index } = req.query;
 
   if (!group || !service) {
     return res.status(400).json({ error: "Invalid proxy service type" });
   }
 
-  const serviceWidget = await getServiceWidget(group, service);
+  const serviceWidget = await getServiceWidget(group, service, index);
+  if (!serviceWidget) {
+    return res.status(400).json({ error: "Invalid proxy service type" });
+  }
   const widget = widgets?.[serviceWidget.type];
   const mapping = widget?.mappings?.[endpoint];
   if (!widget.api || !mapping) {
@@ -159,7 +161,8 @@ export default async function synologyProxyHandler(req, res) {
   let [status, contentType, data] = await httpProxy(url);
   if (status !== 200) {
     logger.debug("Error %d calling url %s", status, url);
-    return res.status(status, data);
+    if (contentType) res.setHeader("Content-Type", contentType);
+    return res.status(status).send(data);
   }
 
   let json = asJson(data);

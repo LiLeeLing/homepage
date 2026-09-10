@@ -2,16 +2,37 @@ export function formatApiCall(url, args) {
   const find = /\{.*?\}/g;
   const replace = (match) => {
     const key = match.replace(/\{|\}/g, "");
-    return args[key] || "";
+    let value = args[key];
+    if (key === "url") {
+      value = value.replace(/\/+$/, ""); // remove trailing slashes
+    }
+    return value?.toString() || "";
   };
 
-  return url.replace(/\/+$/, "").replace(find, replace).replace(find, replace);
+  return url.replace(find, replace).replace(find, replace);
+}
+
+export function parseVersionForUrl(version, defaultValue = null) {
+  if (version === undefined || version === null || version === "") {
+    return defaultValue;
+  }
+
+  if (typeof version === "number") {
+    return Number.isInteger(version) && version >= 0 ? version : defaultValue;
+  }
+
+  if (typeof version === "string" && /^\d+$/.test(version)) {
+    return Number(version);
+  }
+
+  return defaultValue;
 }
 
 export function getURLSearchParams(widget, endpoint) {
   const params = new URLSearchParams({
     group: widget.service_group,
     service: widget.service_name,
+    index: widget.index,
   });
   if (endpoint) {
     params.append("endpoint", endpoint);
@@ -48,11 +69,5 @@ export function jsonArrayFilter(data, filter) {
 }
 
 export function sanitizeErrorURL(errorURL) {
-  // Dont display sensitive params on frontend
-  const url = new URL(errorURL);
-  ["apikey", "api_key", "token", "t", "access_token", "auth"].forEach((key) => {
-    if (url.searchParams.has(key)) url.searchParams.set(key, "***");
-    if (url.hash.includes(key)) url.hash = url.hash.replace(new RegExp(`${key}=[^&]+`), `${key}=***`);
-  });
-  return url.toString();
+  return `${new URL(errorURL).hostname} (see logs for details)`;
 }

@@ -13,12 +13,15 @@
         "ms": "{{value, number}}",
         "date": "{{value, date}}",
         "relativeDate": "{{value, relativeDate}}",
-        "uptime": "{{value, uptime}}",
+        "duration": "{{value, duration}}",
         "months": "mo",
         "days": "d",
         "hours": "h",
         "minutes": "m",
         "seconds": "s"
+    },
+    "auth": {
+        "signout": "Sign out"
     },
     "widget": {
         "missing_type": "Missing Widget Type: {{type}}",
@@ -36,7 +39,9 @@
         "wait": "Itxaron mesedez"
     },
     "search": {
-        "placeholder": "Bilatu…"
+        "placeholder": "Bilatu…",
+        "provider": "Search engine: {{name}}",
+        "select_provider": "Select search engine"
     },
     "resources": {
         "cpu": "CPU",
@@ -63,8 +68,22 @@
         "wlan_users": "WLAN Erabiltzaileak",
         "up": "UP",
         "down": "DOWN",
-        "wait": "Itxaron mesedez",
+        "wait": "Please wait",
         "empty_data": "Subsystem status unknown"
+    },
+    "unifi_drive": {
+        "healthy": "Healthy",
+        "degraded": "Degraded",
+        "no_data": "No storage data available"
+    },
+    "duplicati": {
+        "jobs": "Jobs",
+        "stored": "Stored",
+        "lastBackup": "Last Run",
+        "nextRun": "Next Run",
+        "running": "Running",
+        "warnings": "Warnings",
+        "errors": "Errors"
     },
     "docker": {
         "rx": "RX",
@@ -80,19 +99,24 @@
         "unhealthy": "Unhealthy",
         "not_found": "Not Found",
         "exited": "Exited",
-        "partial": "Partial"
+        "partial": "Partial",
+        "created": "Created",
+        "paused": "Paused",
+        "restarting": "Restarting",
+        "removing": "Removing",
+        "dead": "Dead"
     },
     "ping": {
         "error": "Error",
         "ping": "Ping",
-        "down": "Down",
-        "up": "Up",
+        "down": "Behera",
+        "up": "Gora",
         "not_available": "Not Available"
     },
     "siteMonitor": {
         "http_status": "HTTP status",
         "error": "Error",
-        "response": "Response",
+        "response": "Erantzuna",
         "down": "Down",
         "up": "Up",
         "not_available": "Not Available"
@@ -102,53 +126,66 @@
         "transcoding": "Transcoding",
         "bitrate": "Bit-tasa",
         "no_active": "No Active Streams",
+        "movies": "Filmak",
+        "series": "Serieak",
+        "episodes": "Episodes",
+        "songs": "Abestiak"
+    },
+    "jellyfin": {
+        "playing": "Playing",
+        "transcoding": "Transcoding",
+        "bitrate": "Bitrate",
+        "no_active": "No Active Streams",
         "movies": "Movies",
         "series": "Series",
         "episodes": "Episodes",
-        "songs": "Abestiak"
+        "songs": "Songs",
+        "albums": "Albums"
     },
     "esphome": {
         "offline": "Offline",
         "offline_alt": "Offline",
         "online": "Online",
-        "total": "Guztira",
-        "unknown": "Ezezaguna"
+        "total": "Total",
+        "unknown": "Unknown"
     },
     "evcc": {
-        "pv_power": "Production",
-        "battery_soc": "Battery",
-        "grid_power": "Grid",
-        "home_power": "Consumption",
-        "charge_power": "Charger",
-        "watt_hour": "Wh"
+        "pv_power": "Produkzioak",
+        "battery_soc": "Bateria",
+        "grid_power": "Sarea",
+        "home_power": "Kontsumoa",
+        "charge_power": "Kargagailua",
+        "kilowatt": "kW"
     },
     "flood": {
-        "download": "Download",
-        "upload": "Upload",
+        "download": "Jeitsierak",
+        "upload": "Kargatu",
         "leech": "Leech",
         "seed": "Seed"
     },
     "freshrss": {
-        "subscriptions": "Subscriptions",
-        "unread": "Unread"
+        "subscriptions": "Harpidetzak",
+        "unread": "Irakurri gabe"
     },
     "fritzbox": {
         "connectionStatus": "Status",
         "connectionStatusUnconfigured": "Unconfigured",
-        "connectionStatusConnecting": "Connecting",
+        "connectionStatusConnecting": "Konektatzen",
         "connectionStatusAuthenticating": "Authenticating",
         "connectionStatusPendingDisconnect": "Pending Disconnect",
         "connectionStatusDisconnecting": "Disconnecting",
-        "connectionStatusDisconnected": "Disconnected",
-        "connectionStatusConnected": "Connected",
+        "connectionStatusDisconnected": "Deskonektatuta",
+        "connectionStatusConnected": "Konektatuta",
         "uptime": "Uptime",
         "maxDown": "Max. Down",
         "maxUp": "Max. Up",
         "down": "Down",
         "up": "Up",
         "received": "Received",
-        "sent": "Sent",
-        "externalIPAddress": "Ext. IP"
+        "sent": "Bidalita",
+        "externalIPAddress": "Ext. IP",
+        "externalIPv6Address": "Ext. IPv6",
+        "externalIPv6Prefix": "Ext. IPv6-Prefix"
     },
     "caddy": {
         "upstreams": "Upstreams",
@@ -168,15 +205,22 @@
     "tautulli": {
         "playing": "Playing",
         "transcoding": "Transcoding",
-        "bitrate": "Bit-tasa",
+        "bitrate": "Bitrate",
         "no_active": "No Active Streams",
         "plex_connection_error": "Check Plex Connection"
+    },
+    "tracearr": {
+        "no_active": "No Active Streams",
+        "streams": "Streams",
+        "transcodes": "Transcodes",
+        "directplay": "Direct Play",
+        "bitrate": "Bitrate"
     },
     "omada": {
         "connectedAp": "Connected APs",
         "activeUser": "Active devices",
         "alerts": "Alerts",
-        "connectedGateway": "Connected gateways",
+        "connectedGateways": "Connected gateways",
         "connectedSwitches": "Connected switches"
     },
     "nzbget": {
@@ -241,7 +285,7 @@
         "queued": "Queued",
         "series": "Series",
         "queue": "Queue",
-        "unknown": "Ezezaguna"
+        "unknown": "Unknown"
     },
     "radarr": {
         "wanted": "Wanted",
@@ -249,7 +293,7 @@
         "queued": "Queued",
         "movies": "Movies",
         "queue": "Queue",
-        "unknown": "Ezezaguna"
+        "unknown": "Unknown"
     },
     "lidarr": {
         "wanted": "Wanted",
@@ -270,19 +314,16 @@
         "approved": "Approved",
         "available": "Available"
     },
-    "jellyseerr": {
+    "seerr": {
         "pending": "Pending",
         "approved": "Approved",
-        "available": "Available"
-    },
-    "overseerr": {
-        "pending": "Pending",
+        "available": "Available",
+        "completed": "Completed",
         "processing": "Processing",
-        "approved": "Approved",
-        "available": "Available"
+        "issues": "Open Issues"
     },
     "netalertx": {
-        "total": "Guztira",
+        "total": "Total",
         "connected": "Connected",
         "new_devices": "New Devices",
         "down_alerts": "Down Alerts"
@@ -307,12 +348,32 @@
     "portainer": {
         "running": "Running",
         "stopped": "Stopped",
-        "total": "Guztira"
+        "total": "Total"
+    },
+    "suwayomi": {
+        "download": "Downloaded",
+        "nondownload": "Non-Downloaded",
+        "read": "Read",
+        "unread": "Unread",
+        "downloadedread": "Downloaded & Read",
+        "downloadedunread": "Downloaded & Unread",
+        "nondownloadedread": "Non-Downloaded & Read",
+        "nondownloadedunread": "Non-Downloaded & Unread"
     },
     "tailscale": {
         "address": "Address",
         "expires": "Expires",
         "never": "Never",
+        "user": "User",
+        "hostname": "Hostname",
+        "name": "Name",
+        "client_version": "Client Version",
+        "os": "OS",
+        "created": "Created",
+        "authorized": "Authorized",
+        "is_external": "Is External",
+        "update_available": "Update Available",
+        "tags": "Tags",
         "last_seen": "Last Seen",
         "now": "Now",
         "years": "{{number}}y",
@@ -321,7 +382,9 @@
         "hours": "{{number}}h",
         "minutes": "{{number}}m",
         "seconds": "{{number}}s",
-        "ago": "{{value}} Ago"
+        "ago": "{{value}} Ago",
+        "true": "Yes",
+        "false": "No"
     },
     "technitium": {
         "totalQueries": "Queries",
@@ -347,6 +410,12 @@
         "services": "Services",
         "middleware": "Middleware"
     },
+    "trilium": {
+        "version": "Version",
+        "notesCount": "Notes",
+        "dbSize": "Database Size",
+        "unknown": "Unknown"
+    },
     "navidrome": {
         "nothing_streaming": "No Active Streams",
         "please_wait": "Please Wait"
@@ -354,7 +423,7 @@
     "npm": {
         "enabled": "Enabled",
         "disabled": "Disabled",
-        "total": "Guztira"
+        "total": "Total"
     },
     "coinmarketcap": {
         "configure": "Configure one or more crypto currencies to track",
@@ -409,7 +478,8 @@
     "authentik": {
         "users": "Users",
         "loginsLast24H": "Logins (24h)",
-        "failedLoginsLast24H": "Failed Logins (24h)"
+        "failedLoginsLast24H": "Failed Logins (24h)",
+        "authorizationsLast24H": "Auths (24h)"
     },
     "proxmox": {
         "mem": "MEM",
@@ -417,17 +487,22 @@
         "lxc": "LXC",
         "vms": "VMs"
     },
+    "pulse": {
+        "nodes": "Nodes",
+        "vms": "VMs",
+        "lxcs": "LXCs"
+    },
     "glances": {
         "cpu": "CPU",
         "load": "Load",
-        "wait": "Itxaron mesedez",
+        "wait": "Please wait",
         "temp": "TEMP",
         "_temp": "Temp",
         "warn": "Warn",
         "uptime": "UP",
-        "total": "Guztira",
+        "total": "Total",
         "free": "Free",
-        "used": "Erabilita",
+        "used": "Used",
         "days": "d",
         "hours": "h",
         "crit": "Crit",
@@ -513,7 +588,8 @@
         "child_bridges_status": "{{ok}}/{{total}}",
         "up": "Up",
         "pending": "Pending",
-        "down": "Down"
+        "down": "Down",
+        "ok": "Ok"
     },
     "healthchecks": {
         "new": "New",
@@ -551,12 +627,13 @@
         "speed": "Speed",
         "active": "Active",
         "queue": "Queue",
-        "total": "Guztira"
+        "total": "Total"
     },
     "gluetun": {
         "public_ip": "Public IP",
         "region": "Region",
-        "country": "Country"
+        "country": "Country",
+        "port_forwarded": "Port Forwarded"
     },
     "hdhomerun": {
         "channels": "Channels",
@@ -567,17 +644,26 @@
         "signalStrength": "Strength",
         "signalQuality": "Quality",
         "symbolQuality": "Quality",
-        "networkRate": "Bit-tasa",
+        "networkRate": "Bitrate",
         "clientIP": "Client"
     },
     "scrutiny": {
         "passed": "Passed",
         "failed": "Failed",
-        "unknown": "Ezezaguna"
+        "unknown": "Unknown"
     },
     "paperlessngx": {
         "inbox": "Inbox",
-        "total": "Guztira"
+        "total": "Total"
+    },
+    "pangolin": {
+        "orgs": "Orgs",
+        "sites": "Sites",
+        "resources": "Resources",
+        "targets": "Targets",
+        "traffic": "Traffic",
+        "in": "In",
+        "out": "Out"
     },
     "peanut": {
         "battery_charge": "Battery Charge",
@@ -648,7 +734,7 @@
     },
     "immich": {
         "users": "Users",
-        "photos": "Photos",
+        "photos": "Argazkiak",
         "videos": "Videos",
         "storage": "Storage"
     },
@@ -671,13 +757,17 @@
         "books": "Books"
     },
     "diskstation": {
-        "days": "Egun",
+        "days": "Days",
         "uptime": "Uptime",
         "volumeAvailable": "Available"
     },
+    "dispatcharr": {
+        "channels": "Channels",
+        "streams": "Streams"
+    },
     "mylar": {
         "series": "Series",
-        "issues": "Issues",
+        "issues": "Arazoak",
         "wanted": "Wanted"
     },
     "photoprism": {
@@ -691,6 +781,10 @@
         "processing": "Processing",
         "processed": "Processed",
         "time": "Time"
+    },
+    "firefly": {
+        "networth": "Net Worth",
+        "budget": "Budget"
     },
     "grafana": {
         "dashboards": "Dashboards",
@@ -735,7 +829,8 @@
     "ghostfolio": {
         "gross_percent_today": "Today",
         "gross_percent_1y": "One year",
-        "gross_percent_max": "All time"
+        "gross_percent_max": "All time",
+        "net_worth": "Net Worth"
     },
     "audiobookshelf": {
         "podcasts": "Podcasts",
@@ -757,6 +852,12 @@
         "authors": "Authors",
         "categories": "Categories",
         "series": "Series"
+    },
+    "booklore": {
+        "libraries": "Libraries",
+        "books": "Books",
+        "reading": "Reading",
+        "finished": "Finished"
     },
     "jdownloader": {
         "downloadCount": "Queue",
@@ -785,10 +886,10 @@
         "status": "Status",
         "online": "Online",
         "offline": "Offline",
-        "name": "Name",
-        "map": "Map",
+        "name": "Izena",
+        "map": "Mapa",
         "currentPlayers": "Current players",
-        "players": "Jokalariak",
+        "players": "Players",
         "maxPlayers": "Max players",
         "bots": "Bots",
         "ping": "Ping"
@@ -803,11 +904,11 @@
         "recipes": "Recipes",
         "users": "Users",
         "categories": "Categories",
-        "tags": "Tags"
+        "tags": "Etiketak"
     },
     "openmediavault": {
-        "downloading": "Downloading",
-        "total": "Guztira",
+        "downloading": "Deskargatzen",
+        "total": "Total",
         "running": "Running",
         "stopped": "Stopped",
         "passed": "Passed",
@@ -833,14 +934,15 @@
         "up": "Up",
         "seemsdown": "Seems Down",
         "down": "Down",
-        "unknown": "Ezezaguna"
+        "unknown": "Unknown"
     },
     "calendar": {
         "inCinemas": "In cinemas",
         "physicalRelease": "Physical release",
         "digitalRelease": "Digital release",
         "noEventsToday": "No events for today!",
-        "noEventsFound": "No events found"
+        "noEventsFound": "Ez da gertaerarik aurkitu.",
+        "errorWhenLoadingData": "Error when loading calendar data"
     },
     "romm": {
         "platforms": "Platforms",
@@ -850,20 +952,51 @@
         "screenshots": "Screenshots",
         "totalfilesize": "Total Size"
     },
+    "mailcow": {
+        "domains": "Domains",
+        "mailboxes": "Gutunontziak",
+        "mails": "Mails",
+        "storage": "Storage"
+    },
+    "maintainerr": {
+        "itemsHandled": "Items Handled",
+        "episodesHandled": "Episodes Handled",
+        "moviesHandled": "Movies Handled",
+        "showsHandled": "Shows Handled",
+        "seasonsHandled": "Seasons Handled",
+        "reclaimable": "Reclaimable",
+        "movieReclaimable": "Movie Reclaimable",
+        "showReclaimable": "Show Reclaimable",
+        "totalCapacity": "Total Capacity"
+    },
     "netdata": {
         "warnings": "Warnings",
         "criticals": "Criticals"
     },
+    "ntfy": {
+        "title": "Title",
+        "priority": "Priority",
+        "lastReceived": "Last Received",
+        "message": "Message",
+        "tags": "Tags",
+        "none": "None",
+        "min": "Min",
+        "low": "Low",
+        "default": "Default",
+        "high": "High",
+        "urgent": "Urgent"
+    },
     "plantit": {
-        "events": "Events",
-        "plants": "Plants",
+        "events": "Ekitaldiak",
+        "plants": "Landareak",
         "photos": "Photos",
         "species": "Species"
     },
     "gitea": {
-        "notifications": "Notifications",
+        "notifications": "Jakinarazpenak",
         "issues": "Issues",
-        "pulls": "Pull Requests"
+        "pulls": "Pull Requests",
+        "repositories": "Repositories"
     },
     "stash": {
         "scenes": "Scenes",
@@ -872,8 +1005,8 @@
         "playDuration": "Time Watched",
         "sceneSize": "Scenes Size",
         "sceneDuration": "Scenes Duration",
-        "images": "Images",
-        "imageSize": "Images Size",
+        "images": "Irudia",
+        "imageSize": "Irudiaren tamaina",
         "galleries": "Galleries",
         "performers": "Performers",
         "studios": "Studios",
@@ -884,15 +1017,15 @@
     "tandoor": {
         "users": "Users",
         "recipes": "Recipes",
-        "keywords": "Keywords"
+        "keywords": "Hitz gakoak"
     },
     "homebox": {
-        "items": "Items",
+        "items": "Elementuak",
         "totalWithWarranty": "With Warranty",
         "locations": "Locations",
-        "labels": "Labels",
+        "labels": "Etiketak",
         "users": "Users",
-        "totalValue": "Total Value"
+        "totalValue": "Guztira"
     },
     "crowdsec": {
         "alerts": "Alerts",
@@ -902,7 +1035,7 @@
         "connected": "Connected",
         "enabled": "Enabled",
         "disabled": "Disabled",
-        "total": "Guztira"
+        "total": "Total"
     },
     "swagdashboard": {
         "proxied": "Proxied",
@@ -929,15 +1062,201 @@
     },
     "linkwarden": {
         "links": "Links",
-        "collections": "Collections",
+        "collections": "Bildumak",
         "tags": "Tags"
     },
     "zabbix": {
         "unclassified": "Not classified",
-        "information": "Informazioa",
-        "warning": "Warning",
-        "average": "Average",
-        "high": "High",
+        "information": "Information",
+        "warning": "Abisua",
+        "average": "Batez besteko",
+        "high": "Altua",
         "disaster": "Disaster"
+    },
+    "lubelogger": {
+        "vehicle": "Vehicle",
+        "vehicles": "Ibilgailuak",
+        "serviceRecords": "Service Records",
+        "reminders": "Oroigarriak",
+        "nextReminder": "Hurrengo abisua",
+        "none": "None"
+    },
+    "vikunja": {
+        "projects": "Active Projects",
+        "tasks7d": "Tasks Due This Week",
+        "tasksOverdue": "Overdue Tasks",
+        "tasksInProgress": "Tasks In Progress"
+    },
+    "headscale": {
+        "name": "Name",
+        "address": "Address",
+        "last_seen": "Last Seen",
+        "status": "Status",
+        "online": "Online",
+        "offline": "Offline"
+    },
+    "beszel": {
+        "name": "Name",
+        "systems": "Systems",
+        "up": "Up",
+        "down": "Down",
+        "paused": "Paused",
+        "pending": "Pending",
+        "status": "Status",
+        "updated": "Updated",
+        "cpu": "CPU",
+        "memory": "MEM",
+        "disk": "Disk",
+        "network": "NET"
+    },
+    "argocd": {
+        "apps": "Aplikazioak",
+        "synced": "Sinkronizatuta",
+        "outOfSync": "Out Of Sync",
+        "healthy": "Healthy",
+        "degraded": "Degraded",
+        "progressing": "Progressing",
+        "missing": "Missing",
+        "suspended": "Etenda"
+    },
+    "spoolman": {
+        "loading": "Loading"
+    },
+    "gitlab": {
+        "groups": "Taldeak",
+        "issues": "Issues",
+        "merges": "Merge Requests",
+        "projects": "Proiektuak"
+    },
+    "apcups": {
+        "status": "Status",
+        "load": "Load",
+        "bcharge": "Battery Charge",
+        "timeleft": "Time Left"
+    },
+    "karakeep": {
+        "bookmarks": "Bookmarks",
+        "favorites": "Favorites",
+        "archived": "Archived",
+        "highlights": "Highlights",
+        "lists": "Lists",
+        "tags": "Tags"
+    },
+    "slskd": {
+        "slskStatus": "Network",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "updateStatus": "Update",
+        "update_yes": "Available",
+        "update_no": "Up to Date",
+        "downloads": "Downloads",
+        "uploads": "Uploads",
+        "sharedFiles": "Files"
+    },
+    "jellystat": {
+        "songs": "Songs",
+        "movies": "Movies",
+        "episodes": "Episodes",
+        "other": "Other"
+    },
+    "checkmk": {
+        "serviceErrors": "Service issues",
+        "hostErrors": "Host issues"
+    },
+    "komodo": {
+        "total": "Total",
+        "running": "Running",
+        "stopped": "Stopped",
+        "down": "Down",
+        "unhealthy": "Unhealthy",
+        "unknown": "Unknown",
+        "servers": "Servers",
+        "stacks": "Stacks",
+        "containers": "Containers"
+    },
+    "filebrowser": {
+        "available": "Available",
+        "used": "Used",
+        "total": "Total"
+    },
+    "wallos": {
+        "activeSubscriptions": "Subscriptions",
+        "thisMonthlyCost": "This Month",
+        "nextMonthlyCost": "Next Month",
+        "previousMonthlyCost": "Prev. Month",
+        "nextRenewingSubscription": "Next Payment"
+    },
+    "unraid": {
+        "STARTED": "Started",
+        "STOPPED": "Stopped",
+        "NEW_ARRAY": "New Array",
+        "RECON_DISK": "Reconstructing Disk",
+        "DISABLE_DISK": "Disk Disabled",
+        "SWAP_DSBL": "Swap Disable",
+        "INVALID_EXPANSION": "Invalid Expansion",
+        "PARITY_NOT_BIGGEST": "Parity Not Biggest",
+        "TOO_MANY_MISSING_DISKS": "Too Many Missing Disks",
+        "NEW_DISK_TOO_SMALL": "New Disk Too Small",
+        "NO_DATA_DISKS": "No Data Disks",
+        "notifications": "Notifications",
+        "status": "Status",
+        "cpu": "CPU",
+        "memoryUsed": "Memory Used",
+        "memoryAvailable": "Memory Available",
+        "arrayUsed": "Array Used",
+        "arrayFree": "Array Free",
+        "poolUsed": "{{pool}} Used",
+        "poolFree": "{{pool}} Free"
+    },
+    "backrest": {
+        "num_plans": "Plans",
+        "num_success_30": "Successes",
+        "num_failure_30": "Failures",
+        "num_success_latest": "Succeeding",
+        "num_failure_latest": "Failing",
+        "bytes_added_30": "Bytes Added"
+    },
+    "yourspotify": {
+        "songs": "Songs",
+        "time": "Time",
+        "artists": "Artists"
+    },
+    "arcane": {
+        "containers": "Containers",
+        "images": "Images",
+        "image_updates": "Image Updates",
+        "images_unused": "Unused",
+        "environment_required": "Environment ID Required"
+    },
+    "dockhand": {
+        "running": "Running",
+        "stopped": "Stopped",
+        "cpu": "CPU",
+        "memory": "Memory",
+        "images": "Images",
+        "volumes": "Volumes",
+        "events_today": "Events Today",
+        "pending_updates": "Pending Updates",
+        "stacks": "Stacks",
+        "paused": "Paused",
+        "total": "Total",
+        "environment_not_found": "Environment Not Found"
+    },
+    "sparkyfitness": {
+        "eaten": "Eaten",
+        "burned": "Burned",
+        "remaining": "Remaining",
+        "steps": "Steps"
+    },
+    "syncthing": {
+        "connected": "Connected",
+        "synced": "Synced",
+        "errors": "Errors",
+        "storage": "Storage"
+    },
+    "sportarr": {
+        "wanted": "Wanted",
+        "queued": "Queued",
+        "leagues": "Leagues"
     }
 }

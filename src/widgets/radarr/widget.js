@@ -1,5 +1,5 @@
-import genericProxyHandler from "utils/proxy/handlers/generic";
 import { asJson, jsonArrayFilter } from "utils/proxy/api-helpers";
+import genericProxyHandler from "utils/proxy/handlers/generic";
 
 const widget = {
   api: "{url}/api/v3/{endpoint}?apikey={key}",
@@ -12,7 +12,10 @@ const widget = {
         wanted: jsonArrayFilter(data, (item) => item.monitored && !item.hasFile && item.isAvailable).length,
         have: jsonArrayFilter(data, (item) => item.hasFile).length,
         missing: jsonArrayFilter(data, (item) => item.monitored && !item.hasFile).length,
-        all: asJson(data),
+        all: asJson(data).map((entry) => ({
+          title: entry.title,
+          id: entry.id,
+        })),
       }),
     },
     "queue/status": {
@@ -33,8 +36,8 @@ const widget = {
             status: entry.status,
           }))
           .sort((a, b) => {
-            const downloadingA = a.trackedDownloadState === "downloading";
-            const downloadingB = b.trackedDownloadState === "downloading";
+            const downloadingA = (a.status ?? a.trackedDownloadState) === "downloading";
+            const downloadingB = (b.status ?? b.trackedDownloadState) === "downloading";
             if (downloadingA && !downloadingB) {
               return -1;
             }
@@ -42,8 +45,8 @@ const widget = {
               return 1;
             }
 
-            const percentA = a.sizeLeft / a.size;
-            const percentB = b.sizeLeft / b.size;
+            const percentA = a.size > 0 ? a.sizeLeft / a.size : 1;
+            const percentB = b.size > 0 ? b.sizeLeft / b.size : 1;
             if (percentA < percentB) {
               return -1;
             }
